@@ -24,11 +24,13 @@ SWEP.WorldModel = "models/props/cs_office/microwave.mdl"
 
 SWEP.HoldType = "normal"
 
+local ammo = 3
+
 SWEP.DrawCrosshair = false
-SWEP.Primary.ClipSize = -1
-SWEP.Primary.DefaultClip = -1
+SWEP.Primary.ClipSize = ammo
+SWEP.Primary.DefaultClip = 1
 SWEP.Primary.Automatic = true
-SWEP.Primary.Ammo = "none"
+SWEP.Primary.Ammo = "slam"
 SWEP.Primary.Delay = 1.0
 
 SWEP.Secondary.ClipSize = -1
@@ -84,11 +86,19 @@ function SWEP:MineDrop()
 				phys:SetVelocity(vthrow)
 			end
 
-			ply:StripWeapon(self:GetClass())
+			self:TakePrimaryAmmo(1)
+
+			if not self:CanPrimaryAttack() then
+				self:Remove()
+			end
 		end
 	end
 
 	self:EmitSound(throwsound)
+end
+
+function SWEP:WasBought(buyer)
+	self:SetClip1(ammo)
 end
 
 function SWEP:Reload()
@@ -101,6 +111,12 @@ if CLIENT then
 		self:AddHUDHelp("springmine_help", nil, true)
 
 		return self.BaseClass.Initialize(self)
+	end
+
+	function SWEP:OnRemove()
+		if not IsValid(self:GetOwner()) or self:GetOwner() ~= LocalPlayer() or not self:GetOwner():IsTerror() then return end
+
+		RunConsoleCommand("lastinv")
 	end
 end
 
