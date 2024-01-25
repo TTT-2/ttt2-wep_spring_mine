@@ -72,7 +72,7 @@ function SWEP:MineDrop()
 
 		local vthrow = vvel + vang * 200
 
-		local mine = ents.Create("ttt_spring_mine")
+		local mine = ents.Create("ttt_springmine")
 
 		if IsValid(mine) then
 			mine:SetPos(vsrc + vang * 10)
