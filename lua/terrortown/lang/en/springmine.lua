@@ -1,4 +1,4 @@
-L = LANG.GetLanguageTableReference("en")
+local L = LANG.GetLanguageTableReference("en")
 
 L["name_springmine"] = "Spring Mine"
 L["desc_springmine"] = "Place this strong spring in the world and make the other terrorists jump!"
