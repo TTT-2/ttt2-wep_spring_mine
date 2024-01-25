@@ -107,8 +107,7 @@ end
 
 if CLIENT then
 	function SWEP:Initialize()
-		LANG.AddToLanguage("english", "springmine_help", "Press {primaryfire} to deploy the Spring Mine.")
-		self:AddHUDHelp("springmine_help", nil, true)
+		self:AddTTT2HUDHelp("springmine_help_pri")
 
 		return self.BaseClass.Initialize(self)
 	end
