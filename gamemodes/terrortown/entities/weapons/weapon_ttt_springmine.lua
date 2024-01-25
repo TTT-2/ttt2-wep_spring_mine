@@ -114,6 +114,8 @@ if CLIENT then
 		if not IsValid(self:GetOwner()) or self:GetOwner() ~= LocalPlayer() or not self:GetOwner():IsTerror() then return end
 
 		RunConsoleCommand("lastinv")
+
+		self.BaseClass.OnRemove(self)
 	end
 
 	function SWEP:Initialize()
