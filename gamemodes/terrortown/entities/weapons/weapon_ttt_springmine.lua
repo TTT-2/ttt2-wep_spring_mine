@@ -4,14 +4,14 @@ if SERVER then
 end
 
 if CLIENT then
-	SWEP.PrintName = "Spring Mine"
+	SWEP.PrintName = "name_springmine"
 	SWEP.Slot = 6
 
 	SWEP.ViewModelFOV = 10
 
 	SWEP.EquipMenuData = {
 		type = "item_weapon",
-		desc = "BOIINNNNNG!"
+		desc = "desc_springmine"
 	}
 
 	SWEP.Icon = "VGUI/ttt/icon_springmine.png"
@@ -119,13 +119,3 @@ if CLIENT then
 		RunConsoleCommand("lastinv")
 	end
 end
-
-function SWEP:Deploy()
---	if SERVER and IsValid(self.Owner) then
---		self.Owner:DrawViewModel(false)
---	end
-
---	return true
-end
-
-

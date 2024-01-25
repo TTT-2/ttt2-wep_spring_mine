@@ -61,7 +61,7 @@ if SERVER then
 		  sound.Play(soundZap, self:GetPos())
 
 		  if IsValid(self:GetOwner()) then
-			 TraitorMsg(self:GetOwner(), "YOUR SPRINGMINE HAS BEEN DESTROYED!")
+			 LANG.Msg(self:GetOwner(), "msg_springmine_destroyed", nil, MSG_MSTACK_WARN)
 		  end
 	   end
 	end
