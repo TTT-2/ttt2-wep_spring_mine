@@ -53,24 +53,22 @@ if SERVER then
 	local soundBoing = Sound("springmine/boing.wav")
 
 	function ENT:OnTakeDamage(dmginfo)
-	   if dmginfo:GetAttacker() == self:GetOwner() then return end
+		self:TakePhysicsDamage(dmginfo)
+		self:SetHealth(self:Health() - dmginfo:GetDamage())
 
-	   self:TakePhysicsDamage(dmginfo)
-	   self:SetHealth(self:Health() - dmginfo:GetDamage())
+		if self:Health() <= 0 then
+			self:Remove()
 
-	   if self:Health() <= 0 then
-		  self:Remove()
+			local effect = EffectData()
+			effect:SetOrigin(self:GetPos())
 
-		  local effect = EffectData()
-		  effect:SetOrigin(self:GetPos())
+			util.Effect("cball_explode", effect)
+			sound.Play(soundZap, self:GetPos())
 
-		  util.Effect("cball_explode", effect)
-		  sound.Play(soundZap, self:GetPos())
-
-		  if IsValid(self:GetOwner()) then
-			 LANG.Msg(self:GetOwner(), "msg_springmine_destroyed", nil, MSG_MSTACK_WARN)
-		  end
-	   end
+			if IsValid(self:GetOwner()) then
+				LANG.Msg(self:GetOwner(), "msg_springmine_destroyed", nil, MSG_MSTACK_WARN)
+			end
+		end
 	end
 
 	function ENT:Boing(ply)
