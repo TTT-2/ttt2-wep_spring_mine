@@ -34,11 +34,7 @@ function ENT:Initialize()
 	self:SetHealth(50)
 
 	if SERVER then
-		timer.Simple(0, function()
-			if not IsValid(self) then return end
-
-			markerVision.RegisterEntity(self, self:GetOwner(), VISIBLE_FOR_TEAM)
-		end)
+		markerVision.RegisterEntity(self, self:GetOwner(), VISIBLE_FOR_TEAM)
 	end
 end
 

@@ -80,8 +80,9 @@ function SWEP:MineDrop()
 
 		if IsValid(mine) then
 			mine:SetPos(vsrc + vang * 10)
-			mine:Spawn()
 			mine:SetOwner(ply)
+
+			mine:Spawn()
 			mine:PhysWake()
 
 			local phys = mine:GetPhysicsObject()
