@@ -13,7 +13,7 @@ if CLIENT then
 		desc = "desc_springmine"
 	}
 
-	SWEP.Icon = "VGUI/ttt/icon_springmine.png"
+	SWEP.Icon = "vgui/ttt/icon_springmine.png"
 end
 
 SWEP.Base = "weapon_tttbase"
@@ -42,8 +42,8 @@ SWEP.ViewModelFOV = 70
 SWEP.ViewModelFlip = false
 
 SWEP.UseHands = true
-SWEP.ShowViewModel = false
-SWEP.ShowWorldModel = false
+SWEP.ShowDefaultViewModel = false
+SWEP.ShowDefaultWorldModel = false
 
 SWEP.ViewModel = "models/weapons/cstrike/c_c4.mdl"
 SWEP.WorldModel = "models/weapons/w_c4.mdl"
@@ -52,44 +52,12 @@ SWEP.AllowDrop = false
 
 SWEP.NoSights = true
 
-function SWEP:PrimaryAttack()
-	self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
-	self:MineDrop()
-end
+function SWEP:HandleAttack()
+	if SERVER and self:CanPrimaryAttack() then
+		local spring = ents.Create("ttt_springmine")
 
-function SWEP:SecondaryAttack()
-	self:SetNextSecondaryFire(CurTime() + self.Secondary.Delay)
-	self:MineDrop()
-end
-
-local throwsound = Sound("Weapon_SLAM.SatchelThrow")
-
-function SWEP:MineDrop()
-	if SERVER then
-		local ply = self:GetOwner()
-
-		if not IsValid(ply) then return end
-
-		local vsrc = ply:GetShootPos()
-		local vang = ply:GetAimVector()
-		local vvel = ply:GetVelocity()
-
-		local vthrow = vvel + vang * 200
-
-		local mine = ents.Create("ttt_springmine")
-
-		if IsValid(mine) then
-			mine:SetPos(vsrc + vang * 10)
-			mine:SetOwner(ply)
-
-			mine:Spawn()
-			mine:PhysWake()
-
-			local phys = mine:GetPhysicsObject()
-
-			if IsValid(phys) then
-				phys:SetVelocity(vthrow)
-			end
+		if spring:ThrowEntity(self:GetOwner(), Angle(-90, 0, 180)) then
+			spring.fingerprints = self.fingerprints
 
 			self:TakePrimaryAmmo(1)
 
@@ -98,8 +66,20 @@ function SWEP:MineDrop()
 			end
 		end
 	end
+end
 
-	self:EmitSound(throwsound)
+function SWEP:PrimaryAttack()
+	self:HandleAttack()
+end
+
+function SWEP:SecondaryAttack()
+	self:HandleAttack()
+end
+
+function SWEP:OnRemove()
+	if CLIENT and IsValid(self:GetOwner()) and self:GetOwner() == LocalPlayer() and self:GetOwner():IsTerror() then
+		RunConsoleCommand("lastinv")
+	end
 end
 
 function SWEP:WasBought(buyer)

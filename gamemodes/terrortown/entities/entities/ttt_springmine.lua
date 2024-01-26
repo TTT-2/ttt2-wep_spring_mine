@@ -5,9 +5,13 @@ if SERVER then
 	resource.AddFile("materials/vgui/ttt/icon_springmine.png")
 end
 
-ENT.PrintName = "name_springmine"
-ENT.Icon = "vgui/ttt/icon_springmine.png"
-ENT.Type = "anim"
+ENT.Base = "ttt_base_placeable"
+
+if CLIENT then
+	ENT.PrintName = "name_springmine"
+	ENT.Icon = "vgui/ttt/icon_springmine.png"
+end
+
 ENT.Projectile = true
 ENT.CanHavePrints = true
 
@@ -18,53 +22,40 @@ ENT.Height = 1000
 ENT.Model = Model("models/props_phx/smallwheel.mdl")
 ENT.Color = Color(50, 50, 50, 255)
 
-function ENT:Initialize()
-	self:SetModel(self.Model)
-	self:SetMaterial("models/debug/debugwhite")
-	self:SetColor(self.Color)
-
-	self:PhysicsInit(SOLID_VPHYSICS)
-
-	timer.Simple(1, function()
-		if not IsValid(self) then return end
-
-		self:SetSolidFlags(FSOLID_TRIGGER)
-	end)
-
-	self:SetHealth(50)
-
-	if SERVER then
-		markerVision.RegisterEntity(self, self:GetOwner(), VISIBLE_FOR_TEAM)
-	end
-end
-
-function ENT:StartTouch(ent)
-	if ent:IsValid() and ent:IsPlayer() then
-		self:Boing(ent)
-	end
-end
-
 if SERVER then
-	local soundZap = Sound("npc/assassin/ball_zap1.wav")
 	local soundBoing = Sound("springmine/boing.wav")
 
-	function ENT:OnTakeDamage(dmginfo)
-		self:TakePhysicsDamage(dmginfo)
-		self:SetHealth(self:Health() - dmginfo:GetDamage())
+	function ENT:Initialize()
+		self:SetModel(self.Model)
+		self:SetMaterial("models/debug/debugwhite")
+		self:SetColor(self.Color)
 
-		if self:Health() <= 0 then
-			self:Remove()
+		self.BaseClass.Initialize(self)
 
-			local effect = EffectData()
-			effect:SetOrigin(self:GetPos())
+		timer.Simple(1, function()
+			if not IsValid(self) then return end
 
-			util.Effect("cball_explode", effect)
-			sound.Play(soundZap, self:GetPos())
+			self:SetSolidFlags(FSOLID_TRIGGER)
+			self:WeldToSurface(true)
+		end)
 
-			if IsValid(self:GetOwner()) then
-				LANG.Msg(self:GetOwner(), "msg_springmine_destroyed", nil, MSG_MSTACK_WARN)
-			end
+		self:SetHealth(50)
+
+		markerVision.RegisterEntity(self, self:GetOriginator(), VISIBLE_FOR_TEAM)
+	end
+
+	function ENT:StartTouch(ent)
+		if ent:IsValid() and ent:IsPlayer() then
+			self:Boing(ent)
 		end
+	end
+
+	function ENT:WasDestroyed()
+		local originator = self:GetOriginator()
+
+		if not IsValid(originator) then return end
+
+		LANG.Msg(originator, "msg_springmine_destroyed", nil, MSG_MSTACK_WARN)
 	end
 
 	function ENT:Boing(ply)
@@ -76,7 +67,7 @@ if SERVER then
 
 		ply:SetVelocity(Vector(velPly.x * 2, velPly.y * 2, self.Height))
 		ply.was_pushed = {
-			att = self:GetOwner(),
+			att = self:GetOriginator(),
 			t = CurTime(),
 			infl = self
 		}
@@ -99,7 +90,7 @@ if CLIENT then
 		local ent = tData:GetEntity()
 
 		if not client:IsTerror() or not IsValid(ent) or tData:GetEntityDistance() > 100 or ent:GetClass() ~= "ttt_springmine"
-			or client:GetTeam() ~= ent:GetOwner():GetTeam()
+			or client:GetTeam() ~= ent:GetOriginator():GetTeam()
 		then return end
 
 		-- enable targetID rendering
@@ -117,8 +108,8 @@ if CLIENT then
 
 		if not client:IsTerror() or not IsValid(ent) or ent:GetClass() ~= "ttt_springmine" then return end
 
-		local owner = ent:GetOwner()
-		local nick = IsValid(owner) and owner:Nick() or "---"
+		local originator = ent:GetOriginator()
+		local nick = IsValid(originator) and originator:Nick() or "---"
 
 		local distance = math.Round(util.HammerUnitsToMeters(mvData:GetEntityDistance()), 1)
 
