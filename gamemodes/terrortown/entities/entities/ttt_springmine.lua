@@ -41,7 +41,14 @@ if SERVER then
 
 		self:SetHealth(50)
 
-		markerVision.RegisterEntity(self, self:GetOriginator(), VISIBLE_FOR_TEAM)
+		local mvObject = self:AddMarkerVision("spring_owner")
+		mvObject:SetOwner(self:GetOriginator())
+		mvObject:SetVisibleFor(VISIBLE_FOR_TEAM)
+		mvObject:SyncToClients()
+	end
+
+	function ENT:OnRemove()
+		self:RemoveMarkerVision("spring_owner")
 	end
 
 	function ENT:StartTouch(ent)
@@ -71,8 +78,6 @@ if SERVER then
 			t = CurTime(),
 			infl = self
 		}
-
-		markerVision.RemoveEntity(self)
 
 		self:Remove()
 	end
@@ -105,8 +110,9 @@ if CLIENT then
 	hook.Add("TTT2RenderMarkerVisionInfo", "HUDDrawMarkerVisionSpringMine", function(mvData)
 		local client = LocalPlayer()
 		local ent = mvData:GetEntity()
+		local mvObject = mvData:GetMarkerVisionObject()
 
-		if not client:IsTerror() or not IsValid(ent) or ent:GetClass() ~= "ttt_springmine" then return end
+		if not client:IsTerror() or not mvObject:IsObjectFor(ent, "spring_owner") then return end
 
 		local originator = ent:GetOriginator()
 		local nick = IsValid(originator) and originator:Nick() or "---"
@@ -121,6 +127,6 @@ if CLIENT then
 		mvData:AddDescriptionLine(ParT("marker_vision_owner", {owner = nick}))
 		mvData:AddDescriptionLine(ParT("marker_vision_distance", {distance = distance}))
 
-		mvData:AddDescriptionLine(TryT("marker_vision_visible_for_" .. markerVision.GetVisibleFor(ent)), COLOR_SLATEGRAY)
+		mvData:AddDescriptionLine(TryT(mvObject:GetVisibleForTranslationKey()), COLOR_SLATEGRAY)
 	end)
 end
