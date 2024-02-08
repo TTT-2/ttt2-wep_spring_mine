@@ -1,19 +1,19 @@
 if SERVER then
-	AddCSLuaFile()
+    AddCSLuaFile()
 end
 
 if CLIENT then
-	SWEP.PrintName = "name_springmine"
-	SWEP.Slot = 6
+    SWEP.PrintName = "name_springmine"
+    SWEP.Slot = 6
 
-	SWEP.ViewModelFOV = 10
+    SWEP.ViewModelFOV = 10
 
-	SWEP.EquipMenuData = {
-		type = "item_weapon",
-		desc = "desc_springmine"
-	}
+    SWEP.EquipMenuData = {
+        type = "item_weapon",
+        desc = "desc_springmine",
+    }
 
-	SWEP.Icon = "vgui/ttt/icon_springmine.png"
+    SWEP.Icon = "vgui/ttt/icon_springmine.png"
 end
 
 SWEP.Base = "weapon_tttbase"
@@ -35,7 +35,7 @@ SWEP.Secondary.Ammo = "none"
 SWEP.Secondary.Delay = 1.0
 
 SWEP.Kind = WEAPON_EQUIP
-SWEP.CanBuy = {ROLE_TRAITOR}
+SWEP.CanBuy = { ROLE_TRAITOR }
 SWEP.LimitedStock = true
 
 SWEP.ViewModelFOV = 70
@@ -53,85 +53,87 @@ SWEP.AllowDrop = false
 SWEP.NoSights = true
 
 function SWEP:HandleAttack()
-	if SERVER and self:CanPrimaryAttack() then
-		local spring = ents.Create("ttt_springmine")
+    if SERVER and self:CanPrimaryAttack() then
+        local spring = ents.Create("ttt_springmine")
 
-		if spring:ThrowEntity(self:GetOwner(), Angle(-90, 0, 180)) then
-			spring.fingerprints = self.fingerprints
+        if spring:ThrowEntity(self:GetOwner(), Angle(-90, 0, 180)) then
+            spring.fingerprints = self.fingerprints
 
-			self:TakePrimaryAmmo(1)
+            self:TakePrimaryAmmo(1)
 
-			if not self:CanPrimaryAttack() then
-				self:Remove()
-			end
-		end
-	end
+            if not self:CanPrimaryAttack() then
+                self:Remove()
+            end
+        end
+    end
 end
 
 function SWEP:PrimaryAttack()
-	self:HandleAttack()
+    self:HandleAttack()
 end
 
 function SWEP:SecondaryAttack()
-	self:HandleAttack()
-end
-
-function SWEP:OnRemove()
-	if CLIENT and IsValid(self:GetOwner()) and self:GetOwner() == LocalPlayer() and self:GetOwner():IsTerror() then
-		RunConsoleCommand("lastinv")
-	end
+    self:HandleAttack()
 end
 
 function SWEP:WasBought(buyer)
-	self:SetClip1(ammo)
+    self:SetClip1(ammo)
 end
 
 function SWEP:Reload()
-	return false
+    return false
 end
 
 if CLIENT then
-	function SWEP:OnRemove()
-		if not IsValid(self:GetOwner()) or self:GetOwner() ~= LocalPlayer() or not self:GetOwner():IsTerror() then return end
+    function SWEP:OnRemove()
+        if
+            not IsValid(self:GetOwner())
+            or self:GetOwner() ~= LocalPlayer()
+            or not self:GetOwner():IsTerror()
+        then
+            return
+        end
 
-		RunConsoleCommand("lastinv")
+        RunConsoleCommand("lastinv")
 
-		self.BaseClass.OnRemove(self)
-	end
+        self.BaseClass.OnRemove(self)
+    end
 
-	function SWEP:Initialize()
-		self:AddTTT2HUDHelp("springmine_help_pri")
+    function SWEP:Initialize()
+        self:AddTTT2HUDHelp("springmine_help_pri")
 
-		self:AddCustomViewModel("vmodel", {
-			type = "Model",
-			model = "models/props_phx/smallwheel.mdl",
-			bone = "ValveBiped.Bip01_R_Finger2",
-			rel = "",
-			pos = Vector(1.557, 4.9, 0),
-			angle = Angle(120, 0, 20),
-			size = Vector(0.55, 0.55, 0.55),
-			color = Color(50, 50, 50, 255),
-			surpresslightning = false,
-			material = "models/debug/debugwhite",
-			skin = 0,
-			bodygroup = {}
-		})
+        self.BaseClass.Initialize(self)
+    end
 
-		self:AddCustomWorldModel("wmodel", {
-			type = "Model",
-			model = "models/props_phx/smallwheel.mdl",
-			bone = "ValveBiped.Bip01_R_Hand",
-			rel = "",
-			pos = Vector(5, 6, 0),
-			angle = Angle(120, 20, 0),
-			size = Vector(0.625, 0.625, 0.625),
-			color = Color(50, 50, 50, 255),
-			surpresslightning = false,
-			material = "models/debug/debugwhite",
-			skin = 0,
-			bodygroup = {}
-		})
+    function SWEP:InitializeCustomModels()
+        self:AddCustomViewModel("vmodel", {
+            type = "Model",
+            model = "models/props_phx/smallwheel.mdl",
+            bone = "ValveBiped.Bip01_R_Finger2",
+            rel = "",
+            pos = Vector(1.557, 4.9, 0),
+            angle = Angle(120, 0, 20),
+            size = Vector(0.55, 0.55, 0.55),
+            color = Color(50, 50, 50, 255),
+            surpresslightning = false,
+            material = "models/debug/debugwhite",
+            skin = 0,
+            bodygroup = {},
+        })
 
-		self.BaseClass.Initialize(self)
-	end
+        self:AddCustomWorldModel("wmodel", {
+            type = "Model",
+            model = "models/props_phx/smallwheel.mdl",
+            bone = "ValveBiped.Bip01_R_Hand",
+            rel = "",
+            pos = Vector(5, 6, 0),
+            angle = Angle(120, 20, 0),
+            size = Vector(0.625, 0.625, 0.625),
+            color = Color(50, 50, 50, 255),
+            surpresslightning = false,
+            material = "models/debug/debugwhite",
+            skin = 0,
+            bodygroup = {},
+        })
+    end
 end
