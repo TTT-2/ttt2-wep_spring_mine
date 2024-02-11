@@ -69,10 +69,14 @@ function SWEP:HandleAttack()
 end
 
 function SWEP:PrimaryAttack()
+    self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
+
     self:HandleAttack()
 end
 
 function SWEP:SecondaryAttack()
+    self:SetNextSecondaryFire(CurTime() + self.Secondary.Delay)
+
     self:HandleAttack()
 end
 
