@@ -89,20 +89,6 @@ function SWEP:Reload()
 end
 
 if CLIENT then
-    function SWEP:OnRemove()
-        if
-            not IsValid(self:GetOwner())
-            or self:GetOwner() ~= LocalPlayer()
-            or not self:GetOwner():IsTerror()
-        then
-            return
-        end
-
-        RunConsoleCommand("lastinv")
-
-        self.BaseClass.OnRemove(self)
-    end
-
     function SWEP:Initialize()
         self:AddTTT2HUDHelp("springmine_help_pri")
 
