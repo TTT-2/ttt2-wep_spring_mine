@@ -1,8 +1,5 @@
 if SERVER then
     AddCSLuaFile()
-
-    resource.AddFile("sound/springmine/boing.wav")
-    resource.AddFile("materials/vgui/ttt/icon_springmine.png")
 end
 
 ENT.Base = "ttt_base_placeable"

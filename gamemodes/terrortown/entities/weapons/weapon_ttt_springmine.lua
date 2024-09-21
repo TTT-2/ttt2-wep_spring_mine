@@ -20,10 +20,11 @@ SWEP.Base = "weapon_tttbase"
 
 SWEP.HoldType = "slam"
 
-local ammo = 3
+SWEP.EnableConfigurableClip = true
+SWEP.ConfigurableClip = 3
 
-SWEP.Primary.ClipSize = ammo
-SWEP.Primary.DefaultClip = 1
+SWEP.Primary.ClipSize = -1
+SWEP.Primary.DefaultClip = -1
 SWEP.Primary.Automatic = true
 SWEP.Primary.Ammo = "slam"
 SWEP.Primary.Delay = 1.0
@@ -78,10 +79,6 @@ function SWEP:SecondaryAttack()
     self:SetNextSecondaryFire(CurTime() + self.Secondary.Delay)
 
     self:HandleAttack()
-end
-
-function SWEP:WasBought(buyer)
-    self:SetClip1(ammo)
 end
 
 function SWEP:Reload()
